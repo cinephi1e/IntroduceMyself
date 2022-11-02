@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+
+    <title>변시윤</title>
+    <script src="https://kit.fontawesome.com/419744c921.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;600;700;900&display=swap"
+          rel="stylesheet">
+  
+    <style>
+        * {
+            font-family: 'Noto Serif KR', serif;
+            margin: 30px auto;
+        }
+
+        .wrap {
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        .card {
+            width: 95%;
+            max-width: 500px;
+            margin-top: 0;
+        }
+
+        .cardText {
+            width: 100%;
+            text-align: left;
+            padding: 0 30px;
+        }
+
+        .card-img-top {
+            width: 300px;
+        }
+
+        .card-info {
+            margin-bottom: 0;
+            font-weight: bold;
+        }
+
+        .link {
+            display: inline-block;
+            margin: 3px 0 5px;
+            text-decoration: initial;
+            color: black;
+            font-weight: bold;
+            transition: all ease .3s;
+            -webkit-transition: all ease .3s;
+            -o-transition: all ease .3s;
+            -moz-transition: all ease .3s;
+            -ms-transition: all ease .3s;
+        }
+        .link:hover {
+            color: #12b886;
+        }
+
+        .card-introduction {
+            margin: 0;
+        }
+
+        .form-floating > label {
+            margin-top: 10px;
+            padding: 0 10px;
+        }
+
+        .guestbook {
+            width: 95%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .lead {
+            padding-bottom: 10px;
+        }
+        .btn-primary {
+            color: #333;
+            font-weight: bold;
+            background: none;
+            border: none;
+            margin: 0;
+            padding: 0px;
+            float: right;
+        }
+
+        .btn-primary:hover {
+            color: rgba(0, 0, 0, 0.5);
+            background: none;
+            border: none;
+        }
+
+        .btn-primary:focus {
+            color: #333;
+            font-weight: bold;
+            background: none;
+            border: none;
+            margin-bottom: 0;
+            box-shadow: none;
+        }
+
+        .addGuest {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto 20px auto;
+            padding: 20px;
+            border: 1px solid rgba(0, 0, 0, .125);
+            border-radius: 0.25rem;
+        }
+
+        .addGuest > button {
+            margin-top: 15px;
+        }
+
+        .guestbookList {
+            border-bottom: 1px solid rgba(0, 0, 0, .125);
+        }
+        .guestbookList:first-child {
+            margin-top: 100px;
+        }
+        .guestbookList:last-child {
+            border: none;
+        }
+
+        .guestInfo {
+            text-align: right;
+            margin-top: 0;
+        }
+
+        .mycards {
+            width: 95%;
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .mycards > .card {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .readBtn {
+            background: none;
+            border: none;
+        }
+        .user {
+            font-weight: bold;
+        }
+
+        .date {
+            font-size: 13px;
+        }
+
+        @media ( max-width: 768px ) {
+           body {
+               width: 90%;
+               margin: -30px auto;
+           }
+        }
+
+    </style>
+    <script>
+        $(document).ready(function () {
+            $('#addGuest').hide();
+            show_comment();
+            console.log($('#trash').attr('id'));
+        });
+
+        // 방명록 열고 닫기
+        function openclose() {
+            let status = $('#addGuest').css('display');
+            if (status == 'block') {
+                $('#addGuest').hide()
+                $('#posting-box-btn').text('📮 방명록 작성하기')
+            } else {
+                $('#addGuest').show()
+                $('#posting-box-btn').text('❌ 접기')
+            }
+        }
+
+        function save_comment() {
+            let name = $('#name').val()
+            let comment = $('#comment').val()
+
+            // 현재 날짜 & 시간 구하기
+            var today = new Date();
+            var year = today.getFullYear();
+            var month = ('0' + (today.getMonth() + 1)).slice(-2);
+            var day = ('0' + today.getDate()).slice(-2);
+            var hours = ('0' + today.getHours()).slice(-2);
+            var minutes = ('0' + today.getMinutes()).slice(-2);
+            var seconds = ('0' + today.getSeconds()).slice(-2);
+            var date = year + '-' + month + '-' + day + " " + hours + ':' + minutes + ':' + seconds;
+
+            $.ajax({
+                type: "POST",
+                url: "/yun/guestbook",
+                data: {'name_give': name, 'comment_give': comment, 'date_give': date},
+                success: function (response) {
+                    console.log(date)
+                    window.location.reload()
+                }
+            });
+        }
+
+        function show_comment() {
+            $('#comment-list').empty()
+            $.ajax({
+                type: "GET",
+                url: "/yun/guestbook",
+                data: {},
+                success: function (response) {
+                    let rows = response['comments']
+                    for (let i = 0; i < rows.length; i++) {
+                        let comment = rows[i]['comment']
+                        let read = rows[i]['read']
+                        let num = rows[i]['num']
+                        let name = rows[i]['name']
+                        let date = rows[i]['date']
+
+                        let newGuest = ``
+                        if (read == 0) {
+                            newGuest = `<div class="guestbookList">
+                                                <div>
+                                                    <p>${comment}</p>
+                                                    <div class="guestInfo">
+                                                        <button class="readBtn" onclick="read_guestbook(${num})">🤍</button>
+                                                        <span class="user">${name}</span>
+                                                        <span class="date">${date}</span>
+                                                        <span onClick="remove_guestbook()" id="trash">🗑</span>
+                                                    </div>
+                                                </div>
+                                        </div>`
+                        } else {
+                            newGuest = `<div class="guestbookList">
+                                                <div>
+                                                    <p>${comment}</p>
+                                                    <div class="guestInfo">
+                                                        <span class="user">🖤 ${name}</span>
+                                                        <span class="date">${date}</span>
+                                                        <span onClick="remove_guestbook()" id="trash">🗑</span>
+                                                    </div>
+                                                </div>
+                                        </div>`
+                        }
+
+                        $('#comment-list').append(newGuest)
+                    }
+                }
+            });
+        }
+
+
+        function remove_guestbook(e) {
+            let id = $(this).attr('id');
+            console.log(e.target)
+            $.ajax({
+                type: "POST",
+                url: "/yun/guestbook/remove",
+                data: {'id_give': id },
+                success: function (response) {
+                    console.log(id)
+                    window.location.reload()
+                }
+            });
+        }
+
+
+        function read_guestbook(num) {
+            $.ajax({
+                type: "POST",
+                url: "/yun/guestbook/read",
+                data: {'num_give': num},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+    </script>
+</head>
+
+<body class="wrap">
+<p onclick="history.back()" style="margin: 0;">
+    <i class="fa-solid fa-circle-chevron-left" style="font-size: 30px; margin: 0 0 10px 15px;"></i>
+</p>
+<div class="card">
+    <img class="card-img-top" src="/static/profile.jpg" alt="Card image cap">
+    <div class="cardText">
+        <h5 class="card-title">👩🏻‍💻 변시윤</h5>
+        <p class="card-info">🧠 INTP</p>
+        <a href="https://velog.io/@cinephile" target="_blank" class="link">🔗 velog</a>
+        <div class="card-introduction">
+            <p class="card-info">‍❓ Who Am I</p>
+            <p class="card-info" style="font-weight: initial">• 창조는 삶의 원천! 끊임없이 무언갈 만들고 배움을 추구해요</p>
+            <p class="card-info" style="font-weight: initial">• 안되면 되게 하라! 될 때까지 끈질기게 매달리는 근성이 있어요</p>
+            <p class="card-info" style="font-weight: initial">• 혼자서도 잘해요! 자기주도적인 타입이에요</p>
+            <p class="card-info" style="font-weight: initial">• 아이디어뱅크형의 INTP! 적극적으로 의견을 제시해요</p>
+        </div>
+    </div>
+</div>
+<div class="guestbook">
+    <div>
+        <p class="lead">
+            <a id="posting-box-btn" onclick="openclose()" class="btn btn-primary btn-lg" href="#"
+               role="button">📮 방명록 작성하기</a>
+        </p>
+    </div>
+    <div class="addGuest" id="addGuest">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="name" placeholder="url">
+            <label for="floatingInput">닉네임</label>
+        </div>
+        <div class="form-floating">
+                <textarea class="form-control" placeholder="Leave a comment here" id="comment"
+                          style="height: 100px"></textarea>
+            <label for="floatingTextarea2">내용을 입력해주세요</label>
+        </div>
+        <button onclick="save_comment()" type="button" class="btn btn-dark">등록</button>
+    </div>
+</div>
+<div class="mycards" id="comment-list"></div>
+<a href="#" style="display: flex">
+    <i class="fa-solid fa-circle-up" style="font-size: 30px; color: #555; margin:30px auto;"></i>
+</a>
+</body>
+</html>

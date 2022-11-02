@@ -1,0 +1,43 @@
+function delete_guestbook() {
+    var id = $(this).attr('id');
+
+    $.ajax({
+        type: "POST",
+        url: "/yun/guestbook",
+        data: {'id_give': id},
+        success: function(response) {
+            console.log(response)
+            alert(response["msg"])
+            window.location.reload()
+        }
+    });
+}
+
+## 삭제하기1
+@app.route("/yun/guestbook", methods=["POST"])
+def introduction_delete():
+    id_receive = request.form["id_give"]
+    doc = { 'id': id_receive }
+
+    db.bsy.delete_one(doc)
+
+    return jsonify({'msg': '삭제 완료 ✅'})    
+
+
+
+
+    
+
+function remove_guestbook() {
+    let id = $(this).attr('id');
+
+    $.ajax({
+        type: "POST",
+        url: "/yun/guestbook/remove",
+        data: {'id_give': id },
+        success: function (response) {
+            console.log(id)
+            window.location.reload()
+        }
+    });
+}
