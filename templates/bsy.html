@@ -29,7 +29,7 @@
         }
 
         .card {
-            width: 95%;
+            width: 100%;
             max-width: 500px;
             margin-top: 0;
         }
@@ -75,7 +75,7 @@
         }
 
         .guestbook {
-            width: 95%;
+            width:100%;
             max-width: 500px;
             margin: 0 auto;
         }
@@ -136,7 +136,7 @@
         }
 
         .mycards {
-            width: 95%;
+            width: 100%;
             max-width: 500px;
             margin: auto;
         }
@@ -169,7 +169,7 @@
     <script>
         $(document).ready(function () {
             $('#addGuest').hide();
-            show_comment();
+            show_guestbook();
             console.log($('#trash').attr('id'));
         });
 
@@ -185,9 +185,9 @@
             }
         }
 
-        function save_comment() {
+        function save_guestbook() {
             let name = $('#name').val()
-            let comment = $('#comment').val()
+            let guestComment = $('#guestComment').val()
 
             // 현재 날짜 & 시간 구하기
             var today = new Date();
@@ -202,7 +202,7 @@
             $.ajax({
                 type: "POST",
                 url: "/yun/guestbook",
-                data: {'name_give': name, 'comment_give': comment, 'date_give': date},
+                data: {'name_give': name, 'guestComment_give': guestComment, 'date_give': date},
                 success: function (response) {
                     console.log(date)
                     window.location.reload()
@@ -210,26 +210,38 @@
             });
         }
 
-        function show_comment() {
-            $('#comment-list').empty()
+        function show_guestbook() {
             $.ajax({
                 type: "GET",
                 url: "/yun/guestbook",
                 data: {},
                 success: function (response) {
-                    let rows = response['comments']
-                    for (let i = 0; i < rows.length; i++) {
-                        let comment = rows[i]['comment']
-                        let read = rows[i]['read']
-                        let num = rows[i]['num']
-                        let name = rows[i]['name']
-                        let date = rows[i]['date']
+                    let rows = response['guestComments']
+                    
+                    let rowsReverse = rows.sort(
+                        function(a, b){
+                            if (a.date > b.date) return -1;
+                            else if (b.date > a.date) return 1;
+                            else return 0;
+                        }
+                    )
+
+                    for (let i = 0; i < rowsReverse.length; i++) {
+                        let guestComment = rowsReverse[i]['comment']
+                        let read = rowsReverse[i]['read']
+                        let num = rowsReverse[i]['num']
+                        let name = rowsReverse[i]['name']
+                        let date = rowsReverse[i]['date']
+                        // let id = rows[i]['ObjectId']
+
+                        // console.log(name, id)
+
 
                         let newGuest = ``
                         if (read == 0) {
                             newGuest = `<div class="guestbookList">
                                                 <div>
-                                                    <p>${comment}</p>
+                                                    <p>${guestComment}</p>
                                                     <div class="guestInfo">
                                                         <button class="readBtn" onclick="read_guestbook(${num})">🤍</button>
                                                         <span class="user">${name}</span>
@@ -241,7 +253,7 @@
                         } else {
                             newGuest = `<div class="guestbookList">
                                                 <div>
-                                                    <p>${comment}</p>
+                                                    <p>${guestComment}</p>
                                                     <div class="guestInfo">
                                                         <span class="user">🖤 ${name}</span>
                                                         <span class="date">${date}</span>
@@ -251,16 +263,28 @@
                                         </div>`
                         }
 
-                        $('#comment-list').append(newGuest)
+                        $('#guestComment-list').append(newGuest)
                     }
                 }
             });
         }
 
 
-        function remove_guestbook(e) {
-            let id = $(this).attr('id');
-            console.log(e.target)
+        // 휴지통 클릭시 해당 방명록의 _id값 가져오기
+        // 이벤트 객체 활용
+        // 
+
+        function remove_guestbook() {
+            /* let id = document.getElementById("trash");
+            console.log(id)
+            let trashClick = function(){
+                console.log("방명록 삭제")
+            }
+
+            id.addEventListener('click', trashClick)
+            */
+
+
             $.ajax({
                 type: "POST",
                 url: "/yun/guestbook/remove",
@@ -289,7 +313,7 @@
 
 <body class="wrap">
 <p onclick="history.back()" style="margin: 0;">
-    <i class="fa-solid fa-circle-chevron-left" style="font-size: 30px; margin: 0 0 10px 15px;"></i>
+    <i class="fa-solid fa-circle-chevron-left" style="font-size: 30px; margin-bottom: 10px;"></i>
 </p>
 <div class="card">
     <img class="card-img-top" src="/static/profile.jpg" alt="Card image cap">
@@ -319,14 +343,14 @@
             <label for="floatingInput">닉네임</label>
         </div>
         <div class="form-floating">
-                <textarea class="form-control" placeholder="Leave a comment here" id="comment"
+                <textarea class="form-control" placeholder="Leave a comment here" id="guestComment"
                           style="height: 100px"></textarea>
             <label for="floatingTextarea2">내용을 입력해주세요</label>
         </div>
-        <button onclick="save_comment()" type="button" class="btn btn-dark">등록</button>
+        <button onclick="save_guestbook()" type="button" class="btn btn-dark">등록</button>
     </div>
 </div>
-<div class="mycards" id="comment-list"></div>
+<div class="mycards" id="guestComment-list"></div>
 <a href="#" style="display: flex">
     <i class="fa-solid fa-circle-up" style="font-size: 30px; color: #555; margin:30px auto;"></i>
 </a>
