@@ -18,7 +18,7 @@ def introduction_post():
     name_receive = request.form["name_give"]
     guestComment_receive = request.form["guestComment_give"]
     date_receive = request.form["date_give"]
-    ## 추가
+    ## 추가기능 - num 받아오기
     guestbookList = list(db.bsy.find({}, {'_id': False}))
     count = len(guestbookList) + 1
     doc = {
@@ -37,6 +37,7 @@ def introduction_post():
 @app.route("/yun/guestbook", methods=["GET"])
 def introduction_get():
     guestComment_list = list(db.bsy.find({},{'_id':False}))
+    # print(db.bsy.find())
     return jsonify({'guestComments':guestComment_list})
 
 
@@ -52,7 +53,7 @@ def introduction_remove():
 
 
 
-## 읽음 확인
+## 추가기능 - 읽음 확인
 @app.route("/yun/guestbook/read", methods=["POST"])
 def introduction_read():
     num_receive = request.form["num_give"]
