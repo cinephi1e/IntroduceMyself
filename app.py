@@ -18,6 +18,7 @@ def introduction_post():
     name_receive = request.form["name_give"]
     guestComment_receive = request.form["guestComment_give"]
     date_receive = request.form["date_give"]
+    dateId_receive = request.form["dateId_give"]
     ## 추가기능 - num 받아오기
     guestbookList = list(db.bsy.find({}, {'_id': False}))
     count = len(guestbookList) + 1
@@ -26,7 +27,8 @@ def introduction_post():
         'comment': guestComment_receive,
         'date': date_receive,
         'num': count,
-        'read': 0
+        'read': 0,
+        'selfId': dateId_receive + str(count)
     }
     db.bsy.insert_one(doc)
 
@@ -44,20 +46,16 @@ def introduction_get():
 ## 삭제하기
 @app.route("/yun/guestbook/remove", methods=["POST"])
 def introduction_remove():
-    id_receive = request.form["id_give"]
-    doc = { '_id': id_receive }
-
-    db.bsy.insert_one(doc)
-
-    return jsonify({'msg':'연결확인'})
-
+    selfId_receive = request.form["selfId_give"]
+    db.bsy.delete_one({'selfId': selfId_receive})
+    return jsonify({'msg': '삭제완료'})
 
 
 ## 추가기능 - 읽음 확인
 @app.route("/yun/guestbook/read", methods=["POST"])
 def introduction_read():
-    num_receive = request.form["num_give"]
-    db.bsy.update_one({'num': int(num_receive)}, {'$set': {'read': 1}})
+    selfId_receive = request.form["selfId_give"]
+    db.bsy.update_one({'selfId': selfId_receive}, {'$set': {'read': 1}})
     return jsonify({'msg': '방명록 확인 ✅'})
 
 

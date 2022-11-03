@@ -170,7 +170,6 @@
         $(document).ready(function () {
             $('#addGuest').hide();
             show_guestbook();
-            console.log($('#trash').attr('id'));
         });
 
         // 방명록 열고 닫기
@@ -188,6 +187,7 @@
         function save_guestbook() {
             let name = $('#name').val()
             let guestComment = $('#guestComment').val()
+            let dateId= Date.now()
 
             // 현재 날짜 & 시간 구하기
             var today = new Date();
@@ -199,10 +199,11 @@
             var seconds = ('0' + today.getSeconds()).slice(-2);
             var date = year + '-' + month + '-' + day + " " + hours + ':' + minutes + ':' + seconds;
 
+
             $.ajax({
                 type: "POST",
                 url: "/yun/guestbook",
-                data: {'name_give': name, 'guestComment_give': guestComment, 'date_give': date},
+                data: {'name_give': name, 'guestComment_give': guestComment, 'date_give': date, 'dateId_give': dateId},
                 success: function (response) {
                     console.log(date)
                     window.location.reload()
@@ -233,10 +234,9 @@
                         let num = rowsReverse[i]['num']
                         let name = rowsReverse[i]['name']
                         let date = rowsReverse[i]['date']
-                        // let id = rows[i]['ObjectId']
+                        let selfId = rows[i]['selfId']
 
-                        // console.log(name, id)
-
+                        console.log(selfId)
 
                         let newGuest = ``
                         if (read == 0) {
@@ -244,10 +244,10 @@
                                                 <div>
                                                     <p>${guestComment}</p>
                                                     <div class="guestInfo">
-                                                        <button class="readBtn" onclick="read_guestbook(${num})">🤍</button>
+                                                        <button class="readBtn" onclick="read_guestbook(${selfId})">🤍</button>
                                                         <span class="user">${name}</span>
                                                         <span class="date">${date}</span>
-                                                        <span onClick="remove_guestbook()" id="trash">🗑</span>
+                                                        <span onClick="remove_guestbook(${selfId})">🗑</span>
                                                     </div>
                                                 </div>
                                         </div>`
@@ -258,7 +258,7 @@
                                                     <div class="guestInfo">
                                                         <span class="user">🖤 ${name}</span>
                                                         <span class="date">${date}</span>
-                                                        <span onClick="remove_guestbook()" id="trash">🗑</span>
+                                                        <span onClick="remove_guestbook(${selfId})">🗑</span>
                                                     </div>
                                                 </div>
                                         </div>`
@@ -271,38 +271,28 @@
         }
 
 
-        // 휴지통 클릭시 해당 방명록의 _id값 가져오기
-        // 이벤트 객체 활용
-        // 
-
-        function remove_guestbook() {
-            /* let id = document.getElementById("trash");
-            console.log(id)
-            let trashClick = function(){
-                console.log("방명록 삭제")
-            }
-
-            id.addEventListener('click', trashClick)
-            */
-
-
+        // 삭제하기
+        function remove_guestbook(selfId) {
             $.ajax({
                 type: "POST",
                 url: "/yun/guestbook/remove",
-                data: {'id_give': id },
+                data: {'selfId_give': selfId},
                 success: function (response) {
-                    console.log(id)
+                    confirm("정말 삭제하시겠습니까?")
+                    alert(response["msg"])
                     window.location.reload()
                 }
             });
         }
+        
 
 
-        function read_guestbook(num) {
+        // 읽음 확인
+        function read_guestbook(selfId) {
             $.ajax({
                 type: "POST",
                 url: "/yun/guestbook/read",
-                data: {'num_give': num},
+                data: {'selfId_give': selfId},
                 success: function (response) {
                     alert(response["msg"])
                     window.location.reload()
