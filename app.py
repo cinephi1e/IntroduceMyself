@@ -12,7 +12,7 @@ def home():
    return render_template('bsy.html')
 
 
-## 등록
+## 등록하기
 @app.route("/yun/guestbook", methods=["POST"])
 def introduction_post():
     name_receive = request.form["name_give"]
@@ -39,7 +39,6 @@ def introduction_post():
 @app.route("/yun/guestbook", methods=["GET"])
 def introduction_get():
     guestComment_list = list(db.bsy.find({},{'_id':False}))
-    # print(db.bsy.find())
     return jsonify({'guestComments':guestComment_list})
 
 

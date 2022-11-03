@@ -184,6 +184,7 @@
             }
         }
 
+        // 등록하기
         function save_guestbook() {
             let name = $('#name').val()
             let guestComment = $('#guestComment').val()
@@ -231,7 +232,6 @@
                     for (let i = 0; i < rowsReverse.length; i++) {
                         let guestComment = rowsReverse[i]['comment']
                         let read = rowsReverse[i]['read']
-                        let num = rowsReverse[i]['num']
                         let name = rowsReverse[i]['name']
                         let date = rowsReverse[i]['date']
                         let selfId = rows[i]['selfId']
